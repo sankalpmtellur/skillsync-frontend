@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   Users,
   Search,
@@ -180,7 +181,6 @@ const HowItWorks = () => {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-gray-900 font-inter">
       <Navbar />
 
-      {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <motion.div
@@ -200,19 +200,25 @@ const HowItWorks = () => {
                 Works
               </span>
             </h1>
-            
+
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
               Connect, collaborate, and create amazing projects with talented creators and developers from around the world.
               Your journey to building something extraordinary starts here.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-xl transition-all duration-200 font-semibold">
+              <Link
+                to="/signup"
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-xl transition-all duration-200 font-semibold text-center"
+              >
                 Get Started Free
-              </button>
-              <button className="px-8 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-semibold">
+              </Link>
+              <Link
+                to="/projects"
+                className="px-8 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-semibold text-center"
+              >
                 Explore Projects
-              </button>
+              </Link>
             </div>
           </motion.div>
         </div>
@@ -225,7 +231,6 @@ const HowItWorks = () => {
         </div>
       </section>
 
-      {/* Interactive Steps Section */}
       <section className="py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -241,7 +246,6 @@ const HowItWorks = () => {
           </motion.div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Steps List */}
             <div className="space-y-4">
               {steps.map((step, index) => (
                 <motion.div
@@ -249,11 +253,10 @@ const HowItWorks = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-                    activeStep === index
-                      ? "border-blue-600 bg-blue-50 shadow-lg"
-                      : "border-gray-200 bg-white hover:border-gray-300"
-                  }`}
+                  className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 ${activeStep === index
+                    ? "border-blue-600 bg-blue-50 shadow-lg"
+                    : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
                   onClick={() => setActiveStep(index)}
                 >
                   <div className="flex items-start gap-4">
@@ -269,7 +272,6 @@ const HowItWorks = () => {
               ))}
             </div>
 
-            {/* Step Details */}
             <motion.div
               key={activeStep}
               initial={{ opacity: 0, x: 20 }}
@@ -295,7 +297,6 @@ const HowItWorks = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-16 lg:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -330,7 +331,6 @@ const HowItWorks = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
       <section className="py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -378,7 +378,6 @@ const HowItWorks = () => {
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section className="py-16 lg:py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -410,7 +409,6 @@ const HowItWorks = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16 lg:py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -425,12 +423,18 @@ const HowItWorks = () => {
               Join thousands of creators and developers building amazing projects together.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-3 bg-white text-blue-600 rounded-xl hover:bg-gray-50 transition-colors font-semibold">
+              <Link
+                to="/signup"
+                className="px-8 py-3 bg-white text-blue-600 rounded-xl hover:bg-gray-50 transition-colors font-semibold text-center"
+              >
                 Sign Up Free
-              </button>
-              <button className="px-8 py-3 bg-transparent border-2 border-white text-white rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-200 font-semibold">
+              </Link>
+              <Link
+                to="/projects"
+                className="px-8 py-3 bg-transparent border-2 border-white text-white rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-200 font-semibold text-center"
+              >
                 Explore Projects
-              </button>
+              </Link>
             </div>
           </motion.div>
         </div>
