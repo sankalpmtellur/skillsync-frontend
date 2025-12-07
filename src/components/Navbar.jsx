@@ -12,16 +12,17 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
+              <img 
+                src="/src/assets/logo.png" 
+                alt="SkillSync" 
+                className="w-8 h-8 rounded-lg"
+              />
               <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 SkillSync
               </Link>
             </div>
           </div>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/explore" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
               Explore
@@ -29,7 +30,7 @@ const Navbar = () => {
             <Link to="/projects" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
               Projects
             </Link>
-            <Link to="/how-it-works" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <Link to="/howitworks" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
               How it Works
             </Link>
             <Link
@@ -46,7 +47,6 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}

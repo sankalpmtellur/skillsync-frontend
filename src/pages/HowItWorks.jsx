@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -26,6 +26,10 @@ import Footer from "../components/Footer";
 
 const HowItWorks = () => {
   const [activeStep, setActiveStep] = useState(0);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const steps = [
     {

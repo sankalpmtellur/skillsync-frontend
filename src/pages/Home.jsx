@@ -105,7 +105,7 @@ const Home = () => {
                 </Link>
 
                 <Link
-                  to="/explore"
+                  to="/projects"
                   className="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-blue-600 hover:text-blue-600 transition-all duration-200 font-semibold text-lg"
                 >
                   Explore Projects
@@ -239,7 +239,7 @@ const Home = () => {
                 Get Started Free
               </Link>
               <Link
-                to="/explore"
+                to="/howitworks"
                 className="px-8 py-4 border-2 border-white text-white rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-200 font-semibold text-lg"
               >
                 See How It Works
