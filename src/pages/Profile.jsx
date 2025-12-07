@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
     User,
@@ -31,6 +31,10 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const Profile = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const [activeTab, setActiveTab] = useState("overview");
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [showAvatarModal, setShowAvatarModal] = useState(false);
@@ -187,7 +191,7 @@ const Profile = () => {
                                 </div>
                                 <button
                                     onClick={() => setIsEditingProfile(true)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm cursor-pointer relative z-10"
                                 >
                                     <Edit className="w-4 h-4" />
                                     Edit Profile
@@ -492,8 +496,14 @@ const Profile = () => {
             {isEditingProfile && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-gray-200">
+                        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                             <h2 className="text-2xl font-bold">Edit Profile</h2>
+                            <button
+                                onClick={() => setIsEditingProfile(false)}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                <X className="w-5 h-5 text-gray-500" />
+                            </button>
                         </div>
 
                         <div className="p-6">

@@ -174,6 +174,10 @@ const Explore = () => {
   const totalPages = Math.ceil(sortedUsers.length / itemsPerPage);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     setCurrentPage(1);
   }, [search, selectedSkills, experienceLevel, availability, sortBy]);
 

@@ -162,7 +162,7 @@ const Signup = () => {
 
     setTimeout(() => {
       setIsLoading(false);
-      navigate("/");
+      navigate("/complete-profile");
     }, 2000);
   };
 
