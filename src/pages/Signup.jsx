@@ -146,29 +146,32 @@ const Signup = () => {
     setIsLoading(true);
 
     try {
+      const fullName = `${formData.firstName} ${formData.lastName}`;
+
       const res = await axios.post("http://localhost:3000/api/auth/signup", {
-        name: formData.firstName + " " + formData.lastName,
+        name: fullName,
         email: formData.email,
         password: formData.password,
-        skills: formData.experience + ", " + formData.location
+        skills: "",
+        experience: formData.experience,
+        location: formData.location
       });
 
+      console.log("Signup success:", res.data);
       setIsLoading(false);
-      console.log(res.data);
-      navigate("/complete-profile");
-    }
-    catch (err) {
+      navigate("/login");
+
+    } catch (err) {
       setIsLoading(false);
-      console.error("Signup error full:", err);
-      if (err.response && err.response.data) {
-        console.error("Backend message:", err.response.data);
-        setErrors({ submit: err.response.data.msg || "Server error" });
+      console.log("Signup error:", err);
+      console.log("Signup error response:", err.response?.data);
+
+      if (err.response?.data?.msg === "User already exists") {
+        setErrors({ email: "Email already registered" });
       } else {
-        console.error("Unknown error:", err);
-        setErrors({ submit: "Server error" });
+        alert("Signup failed. Try again!");
       }
     }
-
   };
 
   const handleSocialSignup = (provider) => {
