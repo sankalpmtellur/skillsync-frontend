@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   User,
   Github,
@@ -25,6 +26,22 @@ import Footer from "../components/Footer";
 
 const CompleteProfile = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    bio: "",
+    github: "",
+    twitter: "",
+    linkedin: "",
+    website: "",
+    location: "",
+    workExperience: "",
+    education: "",
+    skills: [],
+    languages: [],
+    interests: ""
+  });
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [selectedInterests, setSelectedInterests] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   
@@ -41,6 +58,15 @@ const CompleteProfile = () => {
     languages: [],
     interests: ""
   });
+
+  // Check for token on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("No token found, redirecting to login");
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const [newSkill, setNewSkill] = useState("");
   const [newLanguage, setNewLanguage] = useState("");
@@ -104,18 +130,45 @@ const CompleteProfile = () => {
     e.preventDefault();
     setIsSaving(true);
 
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("No token found, user not authenticated");
+        setIsSaving(false);
+        return;
+      }
+
+      // Prepare data for backend
+      const profileData = {
+        skills: selectedSkills,
+        experience: formData.experience,
+        location: formData.location,
+        bio: formData.bio || `Passionate developer with expertise in ${selectedSkills.join(', ')}.`
+      };
+
+      const res = await axios.put("http://localhost:3000/api/auth/profile", profileData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log("Profile updated successfully:", res.data);
       setIsSaving(false);
       setShowSuccessMessage(true);
       
       setTimeout(() => {
-        navigate("/profile");
+        navigate("/dashboard");
       }, 2000);
-    }, 1500);
+
+    } catch (err) {
+      console.error("Error updating profile:", err);
+      setIsSaving(false);
+      alert("Failed to update profile. Please try again!");
+    }
   };
 
   const handleSkip = () => {
-    navigate("/profile");
+    navigate("/dashboard");
   };
 
   return (

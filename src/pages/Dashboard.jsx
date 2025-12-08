@@ -2,47 +2,54 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import {
-    Users,
-    Code2,
-    Trophy,
-    Rocket,
-    Star,
-    Calendar,
-    Briefcase,
-    TrendingUp,
-    Clock,
-    ExternalLink,
-    Edit,
-    Plus,
-    Eye,
-    User,
-    MapPin,
-    Mail,
-    Settings,
-    LogOut
-} from "lucide-react";
+import { Users, Code2, Trophy, Rocket, Star, Calendar, Briefcase, TrendingUp, Clock, ExternalLink, Edit, Plus, Eye, User, MapPin, Mail, Settings, LogOut } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
 
 const Dashboard = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
+        const fetchUserData = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    console.log("No token found, user not authenticated");
+                    return;
+                }
+
+                const res = await axios.get("http://localhost:3000/api/auth/me", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                
+                console.log("User data fetched:", res.data);
+                setUser(res.data);
+            } catch (err) {
+                console.error("Error fetching user data:", err);
+                if (err.response?.status === 401) {
+                    localStorage.removeItem("token");
+                    window.location.href = "/login";
+                }
+            }
+        };
+
+        fetchUserData();
     }, []);
 
     const [user, setUser] = useState({
-        name: "Aarav Sharma",
-        title: "Full Stack Developer",
-        email: "aarav.sharma@example.com",
-        location: "San Francisco, CA",
-        bio: "Passionate about building scalable web applications with modern technologies. Love collaborating on innovative projects and learning from the community.",
-        skills: ["React", "Node.js", "TypeScript", "MongoDB", "AWS"],
-        experience: "Advanced",
-        avatar: "/src/assets/avatars/avatar1.png",
-        joined: "2023",
-        projects: 12,
-        collaborators: 8,
-        views: 156
+        name: "",
+        title: "",
+        email: "",
+        location: "",
+        bio: "",
+        skills: [],
+        experience: "",
+        avatar: "",
+        joined: "",
+        projects: 0,
+        collaborators: 0,
+        views: 0
     });
 
     const [recentProjects, setRecentProjects] = useState([
@@ -153,7 +160,6 @@ const Dashboard = () => {
 
             <div className="flex-1 lg:ml-0">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {/* Welcome Section */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -163,7 +169,7 @@ const Dashboard = () => {
                         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h1 className="text-3xl font-bold mb-2">Welcome back, {user.name}!</h1>
+                                    <h1 className="text-3xl font-bold mb-2">Welcome {user.name}!</h1>
                                     <p className="text-blue-100">Here's what's happening with your projects and collaborations today.</p>
                                 </div>
                                 <div className="hidden lg:block">

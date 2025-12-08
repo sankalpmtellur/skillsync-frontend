@@ -20,6 +20,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,6 +28,10 @@ const Login = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+    // Clear login error when user starts typing
+    if (loginError) {
+      setLoginError("");
     }
   };
 
@@ -56,6 +61,7 @@ const handleSubmit = async (e) => {
     return;
   }
   setIsLoading(true);
+  setLoginError("");
 
   try {
     const res = await axios.post("http://localhost:3000/api/auth/login", {
@@ -69,6 +75,15 @@ const handleSubmit = async (e) => {
   } catch (err) {
     console.log("Login error:", err);
     console.log("Login error response:", err.response?.data);
+    
+    // Show appropriate error message
+    if (err.response?.data?.msg === "Invalid credentials") {
+      setLoginError("Invalid email or password. Please try again.");
+    } else if (err.response?.data?.msg === "User not found") {
+      setLoginError("No account found with this email address.");
+    } else {
+      setLoginError("Login failed. Please try again later.");
+    }
   } finally {
     setIsLoading(false);
   }
@@ -161,6 +176,18 @@ const handleSubmit = async (e) => {
                 </Link>
 
                 <h2 className="text-2xl font-bold mb-6">Login</h2>
+
+                {/* Error Notification */}
+                {loginError && (
+                  <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">!</span>
+                      </div>
+                      <p className="text-red-700 text-sm">{loginError}</p>
+                    </div>
+                  </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>

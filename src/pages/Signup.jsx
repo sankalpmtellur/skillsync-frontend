@@ -158,8 +158,9 @@ const Signup = () => {
       });
 
       console.log("Signup success:", res.data);
+      localStorage.setItem("token", res.data.token);
       setIsLoading(false);
-      navigate("/login");
+      navigate("/complete-profile");
 
     } catch (err) {
       setIsLoading(false);
