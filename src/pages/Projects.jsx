@@ -1,24 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import {
-  Search,
-  Filter,
-  Plus,
-  Code2,
-  Trophy,
-  Rocket,
-  Star,
-  Calendar,
-  Users,
-  ExternalLink,
-  Edit,
-  Trash2,
-  ChevronDown,
-  Heart,
-  MessageCircle,
-  Clock,
-  TrendingUp
-} from "lucide-react";
+import axios from "axios";
+import { Search, Filter, Plus, Code2, Trophy, Rocket, Star, Calendar, Users, ExternalLink, Edit, Trash2, ChevronDown, Heart, MessageCircle, Clock, TrendingUp } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -51,7 +34,7 @@ const Projects = () => {
 
   const categories = [
     "Web Development",
-    "Mobile Development", 
+    "Mobile Development",
     "AI/ML",
     "UI/UX Design",
     "Blockchain",
@@ -64,137 +47,40 @@ const Projects = () => {
 
   const statuses = ["planning", "in-progress", "completed", "on-hold"];
 
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: "AI-Powered Task Manager",
-      description: "A smart task management application that uses machine learning to prioritize tasks and predict completion times.",
-      category: "AI/ML",
-      status: "in-progress",
-      teamSize: 4,
-      duration: "3 months",
-      difficulty: "intermediate",
-      progress: 65,
-      likes: 24,
-      comments: 8,
-      views: 156,
-      createdAt: "2024-01-15",
-      updatedAt: "2024-01-20",
-      author: "Alex Chen",
-      authorAvatar: "/src/assets/avatars/avatar5.png",
-      tags: ["React", "Node.js", "TensorFlow", "MongoDB"],
-      featured: true
-    },
-    {
-      id: 2,
-      title: "E-Commerce Platform",
-      description: "A full-stack e-commerce solution with real-time inventory management, payment processing, and analytics dashboard.",
-      category: "Web Development",
-      status: "in-progress",
-      teamSize: 6,
-      duration: "6 months",
-      difficulty: "advanced",
-      progress: 40,
-      likes: 18,
-      comments: 12,
-      views: 203,
-      createdAt: "2024-01-10",
-      updatedAt: "2024-01-18",
-      author: "Aarav Sharma",
-      authorAvatar: "/src/assets/avatars/avatar1.png",
-      tags: ["React", "Node.js", "PostgreSQL", "Stripe"],
-      featured: false
-    },
-    {
-      id: 3,
-      title: "Mobile Fitness Tracker",
-      description: "Cross-platform mobile app for tracking workouts, nutrition, and health metrics with social features.",
-      category: "Mobile Development",
-      status: "planning",
-      teamSize: 3,
-      duration: "4 months",
-      difficulty: "intermediate",
-      progress: 15,
-      likes: 31,
-      comments: 6,
-      views: 89,
-      createdAt: "2024-01-22",
-      updatedAt: "2024-01-22",
-      author: "Sankalp Reddy",
-      authorAvatar: "/src/assets/avatars/avatar3.png",
-      tags: ["Flutter", "Firebase", "Dart", "REST API"],
-      featured: false
-    },
-    {
-      id: 4,
-      title: "Blockchain Voting System",
-      description: "Secure and transparent voting platform built on blockchain technology for organizational elections.",
-      category: "Blockchain",
-      status: "completed",
-      teamSize: 5,
-      duration: "5 months",
-      difficulty: "expert",
-      progress: 100,
-      likes: 45,
-      comments: 23,
-      views: 312,
-      createdAt: "2023-11-01",
-      updatedAt: "2024-01-05",
-      author: "Meera Patel",
-      authorAvatar: "/src/assets/avatars/avatar2.png",
-      tags: ["Solidity", "Web3.js", "Ethereum", "IPFS"],
-      featured: true
-    },
-    {
-      id: 5,
-      title: "UI Design System",
-      description: "Comprehensive design system with reusable components, guidelines, and documentation for consistent UI/UX.",
-      category: "UI/UX Design",
-      status: "in-progress",
-      teamSize: 2,
-      duration: "2 months",
-      difficulty: "beginner",
-      progress: 80,
-      likes: 56,
-      comments: 14,
-      views: 445,
-      createdAt: "2024-01-08",
-      updatedAt: "2024-01-19",
-      author: "Riya Gupta",
-      authorAvatar: "/src/assets/avatars/avatar4.png",
-      tags: ["Figma", "Design Tokens", "Component Library", "Documentation"],
-      featured: false
-    },
-    {
-      id: 6,
-      title: "DevOps Pipeline Automation",
-      description: "Automated CI/CD pipeline with containerization, monitoring, and deployment strategies for microservices.",
-      category: "DevOps",
-      status: "in-progress",
-      teamSize: 3,
-      duration: "3 months",
-      difficulty: "advanced",
-      progress: 55,
-      likes: 22,
-      comments: 9,
-      views: 178,
-      createdAt: "2024-01-12",
-      updatedAt: "2024-01-21",
-      author: "Jordan Kim",
-      authorAvatar: "/src/assets/avatars/avatar6.png",
-      tags: ["Docker", "Kubernetes", "Jenkins", "AWS"],
-      featured: false
-    }
-  ]);
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get("http://localhost:3000/api/projects", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setProjects(res.data);
+
+        console.log("Fetched projects:", res.data);
+
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
 
   const filteredProjects = projects.filter((project) => {
-    const matchesSearch = project.title.toLowerCase().includes(search.toLowerCase()) ||
-                          project.description.toLowerCase().includes(search.toLowerCase()) ||
-                          project.tags.some(tag => tag.toLowerCase().includes(search.toLowerCase()));
-    
+    const matchesSearch =
+      project.title.toLowerCase().includes(search.toLowerCase()) ||
+      project.description.toLowerCase().includes(search.toLowerCase()) ||
+      (project.tags || []).some(tag =>
+        tag.toLowerCase().includes(search.toLowerCase())
+      );
     const matchesCategory = !selectedCategory || project.category === selectedCategory;
     const matchesStatus = !selectedStatus || project.status === selectedStatus;
-    
+
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
@@ -202,7 +88,8 @@ const Projects = () => {
     if (sortBy === "latest") return new Date(b.updatedAt) - new Date(a.updatedAt);
     if (sortBy === "popular") return b.likes - a.likes;
     if (sortBy === "views") return b.views - a.views;
-    if (sortBy === "progress") return b.progress - a.progress;
+    if (sortBy === "progress")
+      return (b.progress || 0) - (a.progress || 0);
     return 0;
   });
 
@@ -228,34 +115,51 @@ const Projects = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleCreateProject = () => {
-    if (!newProject.title || !newProject.description || !newProject.category) return;
+  const handleCreateProject = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-    const project = {
-      id: projects.length + 1,
-      ...newProject,
-      progress: 0,
-      likes: 0,
-      comments: 0,
-      views: 0,
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0],
-      author: "You",
-      authorAvatar: "/src/assets/avatars/avatar7.png",
-      tags: []
-    };
+      const res = await axios.post(
+        "http://localhost:3000/api/projects",
+        {
+          title: newProject.title,
+          description: newProject.description,
+          category: newProject.category,
+          status: newProject.status,
+          teamSize: Number(newProject.teamSize),
+          duration: newProject.duration,
+          difficulty: newProject.difficulty,
+          progress: 0,
+          tags: [],
+          featured: false
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-    setProjects([project, ...projects]);
-    setNewProject({
-      title: "",
-      description: "",
-      category: "",
-      status: "planning",
-      teamSize: 1,
-      duration: "",
-      difficulty: "beginner"
-    });
-    setShowCreateModal(false);
+      console.log("Project created:", res.data);
+      const createdProject = res.data.project;
+      setProjects((prev) => [createdProject, ...prev]);
+
+      setNewProject({
+        title: "",
+        description: "",
+        category: "",
+        status: "planning",
+        teamSize: 1,
+        duration: "",
+        difficulty: "beginner"
+      });
+
+      setShowCreateModal(false);
+
+    } catch (err) {
+      console.log("Create project error:", err.response?.data || err);
+      alert("Failed to create project");
+    }
   };
 
   const getStatusColor = (status) => {
@@ -296,9 +200,9 @@ const Projects = () => {
                 Projects
               </span>
             </h1>
-            
+
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              Explore innovative projects, collaborate with talented creators, and bring your ideas to life. 
+              Explore innovative projects, collaborate with talented creators, and bring your ideas to life.
               Find inspiration and connect with the community.
             </p>
 
@@ -350,7 +254,7 @@ const Projects = () => {
             <div className={`${showFilters ? 'block' : 'hidden'} lg:block w-full lg:w-auto`}>
               <div className="flex flex-col lg:flex-row gap-4">
                 <div className="relative dropdown-container">
-                  <button 
+                  <button
                     onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
                     className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 min-w-[150px]"
                   >
@@ -358,7 +262,7 @@ const Projects = () => {
                     <span>{selectedCategory || "All Categories"}</span>
                     <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${showCategoryDropdown ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   <div className={`${showCategoryDropdown ? 'block' : 'hidden'} absolute top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10`}>
                     <div className="py-2 max-h-64 overflow-y-auto">
                       <button
@@ -387,7 +291,7 @@ const Projects = () => {
                 </div>
 
                 <div className="relative dropdown-container">
-                  <button 
+                  <button
                     onClick={() => setShowStatusDropdown(!showStatusDropdown)}
                     className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 min-w-[150px]"
                   >
@@ -395,7 +299,7 @@ const Projects = () => {
                     <span>{selectedStatus ? selectedStatus.replace('-', ' ') : "All Status"}</span>
                     <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${showStatusDropdown ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   <div className={`${showStatusDropdown ? 'block' : 'hidden'} absolute top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10`}>
                     <div className="py-2">
                       <button
@@ -424,7 +328,7 @@ const Projects = () => {
                 </div>
 
                 <div className="relative dropdown-container">
-                  <button 
+                  <button
                     onClick={() => setShowSortDropdown(!showSortDropdown)}
                     className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 min-w-[150px]"
                   >
@@ -437,7 +341,7 @@ const Projects = () => {
                     </span>
                     <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${showSortDropdown ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   <div className={`${showSortDropdown ? 'block' : 'hidden'} absolute top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10`}>
                     <div className="py-2">
                       <button
@@ -570,7 +474,7 @@ const Projects = () => {
                           <span className="font-medium">{project.progress}%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
+                          <div
                             className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${project.progress}%` }}
                           ></div>
@@ -617,7 +521,7 @@ const Projects = () => {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex gap-2">
                         <button className="flex-1 px-3 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-md transition-all duration-200 text-sm font-medium">
                           View Project
@@ -641,8 +545,8 @@ const Projects = () => {
                       onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1}
                       className={`p-2 rounded-lg border transition-colors ${currentPage === 1
-                          ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                        ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                         }`}
                     >
                       <ChevronDown className="w-5 h-5 rotate-90" />
@@ -660,8 +564,8 @@ const Projects = () => {
                               key={page}
                               onClick={() => setCurrentPage(page)}
                               className={`w-10 h-10 rounded-lg font-medium transition-colors ${currentPage === page
-                                  ? 'bg-blue-600 text-white'
-                                  : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                                ? 'bg-blue-600 text-white'
+                                : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
                                 }`}
                             >
                               {page}
@@ -685,8 +589,8 @@ const Projects = () => {
                       onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                       disabled={currentPage === totalPages}
                       className={`p-2 rounded-lg border transition-colors ${currentPage === totalPages
-                          ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                        ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                         }`}
                     >
                       <ChevronDown className="w-5 h-5 -rotate-90" />
@@ -721,7 +625,7 @@ const Projects = () => {
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-2xl font-bold">Create New Project</h2>
             </div>
-            
+
             <div className="p-6">
               <div className="space-y-4">
                 <div>
@@ -730,7 +634,7 @@ const Projects = () => {
                     type="text"
                     placeholder="Enter project title"
                     value={newProject.title}
-                    onChange={(e) => setNewProject({...newProject, title: e.target.value})}
+                    onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -740,7 +644,7 @@ const Projects = () => {
                   <textarea
                     placeholder="Describe your project"
                     value={newProject.description}
-                    onChange={(e) => setNewProject({...newProject, description: e.target.value})}
+                    onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                     rows={4}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -751,7 +655,7 @@ const Projects = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                     <select
                       value={newProject.category}
-                      onChange={(e) => setNewProject({...newProject, category: e.target.value})}
+                      onChange={(e) => setNewProject({ ...newProject, category: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="">Select category</option>
@@ -765,7 +669,7 @@ const Projects = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                     <select
                       value={newProject.status}
-                      onChange={(e) => setNewProject({...newProject, status: e.target.value})}
+                      onChange={(e) => setNewProject({ ...newProject, status: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       {statuses.map(status => (
@@ -782,7 +686,7 @@ const Projects = () => {
                       type="number"
                       min="1"
                       value={newProject.teamSize}
-                      onChange={(e) => setNewProject({...newProject, teamSize: parseInt(e.target.value)})}
+                      onChange={(e) => setNewProject({ ...newProject, teamSize: parseInt(e.target.value) })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -793,7 +697,7 @@ const Projects = () => {
                       type="text"
                       placeholder="e.g., 3 months"
                       value={newProject.duration}
-                      onChange={(e) => setNewProject({...newProject, duration: e.target.value})}
+                      onChange={(e) => setNewProject({ ...newProject, duration: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -803,7 +707,7 @@ const Projects = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
                   <select
                     value={newProject.difficulty}
-                    onChange={(e) => setNewProject({...newProject, difficulty: e.target.value})}
+                    onChange={(e) => setNewProject({ ...newProject, difficulty: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="beginner">Beginner</option>
