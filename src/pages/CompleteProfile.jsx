@@ -17,7 +17,6 @@ import {
   X,
   Check,
   Code2,
-  Heart,
   Star,
   Trophy
 } from "lucide-react";
@@ -256,7 +255,6 @@ const CompleteProfile = () => {
 
                     <div>
                       <label htmlFor="interests" className="block text-sm font-medium text-gray-700 mb-2">
-                        <Heart className="w-4 h-4 inline mr-1" />
                         Interests
                       </label>
                       <input

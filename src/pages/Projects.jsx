@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
-import { Search, Filter, Plus, Code2, Trophy, Rocket, Star, Calendar, Users, ExternalLink, Edit, Trash2, ChevronDown, Heart, MessageCircle, Clock, TrendingUp } from "lucide-react";
+import { Search, Filter, Plus, Code2, Trophy, Rocket, Star, Calendar, Users, ExternalLink, Edit, Trash2, ChevronDown, Clock, TrendingUp, X } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -48,6 +48,8 @@ const Projects = () => {
   const statuses = ["planning", "in-progress", "completed", "on-hold"];
 
   const [projects, setProjects] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editProject, setEditProject] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -86,7 +88,7 @@ const Projects = () => {
 
   const sortedProjects = [...filteredProjects].sort((a, b) => {
     if (sortBy === "latest") return new Date(b.updatedAt) - new Date(a.updatedAt);
-    if (sortBy === "popular") return b.likes - a.likes;
+    if (sortBy === "popular") return b.views - a.views;
     if (sortBy === "views") return b.views - a.views;
     if (sortBy === "progress")
       return (b.progress || 0) - (a.progress || 0);
@@ -161,6 +163,91 @@ const Projects = () => {
       alert("Failed to create project");
     }
   };
+
+  const handleDeleteProject = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.delete(`http://localhost:3000/api/projects/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setProjects((prev) => prev.filter((p) => p.id !== id));
+
+      alert("Project deleted!");
+
+    } catch (err) {
+      console.log("Delete project error:", err.response?.data || err);
+      alert("Failed to delete project");
+    }
+  };
+
+  const openEditModal = (project) => {
+    setEditProject(project);
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditProject(null);
+  };
+
+  const handleUpdateProject = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.put(
+        `http://localhost:3000/api/projects/${editProject.id}`,
+        {
+          title: editProject.title,
+          description: editProject.description,
+          category: editProject.category,
+          status: editProject.status,
+          teamSize: Number(editProject.teamSize),
+          duration: editProject.duration,
+          difficulty: editProject.difficulty,
+          progress: editProject.progress || 0,
+          tags: editProject.tags || [],
+          featured: editProject.featured || false
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      console.log("Project updated:", res.data);
+      const updatedProject = res.data.project || res.data;
+
+      if (updatedProject && updatedProject.id) {
+        setProjects((prev) =>
+          prev.map((p) => p.id === updatedProject.id ? updatedProject : p)
+        );
+      } else {
+        // If the response doesn't contain the updated project, refetch all projects
+        const fetchProjects = async () => {
+          try {
+            const token = localStorage.getItem("token");
+            const res = await axios.get("http://localhost:3000/api/projects", {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            setProjects(res.data);
+          } catch (err) {
+            console.error("Error refetching projects:", err);
+          }
+        };
+        fetchProjects();
+      }
+
+      closeEditModal();
+      alert("Project updated successfully!");
+
+    } catch (err) {
+      console.log("Update project error:", err.response?.data || err);
+      alert("Failed to update project");
+    }
+  };
+
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -508,14 +595,6 @@ const Projects = () => {
                         </div>
                         <div className="flex items-center gap-3 text-sm text-gray-600">
                           <div className="flex items-center gap-1">
-                            <Heart className="w-4 h-4" />
-                            <span>{project.likes}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MessageCircle className="w-4 h-4" />
-                            <span>{project.comments}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
                             <ExternalLink className="w-4 h-4" />
                             <span>{project.views}</span>
                           </div>
@@ -527,10 +606,17 @@ const Projects = () => {
                           View Project
                         </button>
                         <button className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
-                          <Edit className="w-4 h-4 text-gray-600" />
+                          <Edit
+                            className="cursor-pointer text-blue-500 hover:text-blue-700"
+                            onClick={() => openEditModal(project)}
+                          />
                         </button>
                         <button className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
-                          <Trash2 className="w-4 h-4 text-gray-600" />
+                          <Trash2
+                            className="cursor-pointer text-red-500 hover:text-red-700"
+                            onClick={() => handleDeleteProject(project.id)}
+                          />
+
                         </button>
                       </div>
                     </div>
@@ -732,6 +818,145 @@ const Projects = () => {
                 className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create Project
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEditModal && editProject && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Edit Project</h2>
+              <button
+                onClick={closeEditModal}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Project Title</label>
+                  <input
+                    type="text"
+                    placeholder="Enter project title"
+                    value={editProject.title}
+                    onChange={(e) => setEditProject({ ...editProject, title: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <textarea
+                    placeholder="Describe your project"
+                    value={editProject.description}
+                    onChange={(e) => setEditProject({ ...editProject, description: e.target.value })}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <select
+                      value={editProject.category}
+                      onChange={(e) => setEditProject({ ...editProject, category: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select category</option>
+                      {categories.map(category => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select
+                      value={editProject.status}
+                      onChange={(e) => setEditProject({ ...editProject, status: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {statuses.map(status => (
+                        <option key={status} value={status}>{status.replace('-', ' ')}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Team Size</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={editProject.teamSize}
+                      onChange={(e) => setEditProject({ ...editProject, teamSize: parseInt(e.target.value) })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., 3 months"
+                      value={editProject.duration}
+                      onChange={(e) => setEditProject({ ...editProject, duration: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+                    <select
+                      value={editProject.difficulty}
+                      onChange={(e) => setEditProject({ ...editProject, difficulty: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="beginner">Beginner</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="advanced">Advanced</option>
+                      <option value="expert">Expert</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Progress (%)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={editProject.progress || 0}
+                      onChange={(e) => setEditProject({ ...editProject, progress: parseInt(e.target.value) })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                onClick={closeEditModal}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateProject}
+                disabled={!editProject.title || !editProject.description || !editProject.category}
+                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Update Project
               </button>
             </div>
           </div>

@@ -18,14 +18,12 @@ import {
     Camera,
     X,
     Check,
-    Heart,
-    MessageCircle,
-    Users,
     Code2,
     Rocket,
     TrendingUp,
     Clock,
-    ExternalLink
+    ExternalLink,
+    Users
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -365,20 +363,6 @@ const Profile = () => {
                                 <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                                     <h2 className="text-xl font-semibold mb-4">Engagement</h2>
                                     <div className="space-y-3">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <Heart className="w-4 h-4 text-gray-400" />
-                                                <span className="text-sm">Likes Received</span>
-                                            </div>
-                                            <span className="font-semibold">234</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <MessageCircle className="w-4 h-4 text-gray-400" />
-                                                <span className="text-sm">Comments</span>
-                                            </div>
-                                            <span className="font-semibold">89</span>
-                                        </div>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <Users className="w-4 h-4 text-gray-400" />

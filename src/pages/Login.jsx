@@ -48,34 +48,31 @@ const Login = () => {
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = validateForm();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const newErrors = validateForm();
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
+  setIsLoading(true);
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+  try {
+    const res = await axios.post("http://localhost:3000/api/auth/login", {
+      email: formData.email,
+      password: formData.password
+    });
 
-    setIsLoading(true);
-
-    try {
-      const res = await axios.post("http://localhost:3000/api/auth/login", {
-        email: formData.email,
-        password: formData.password,
-      });
-
-      setIsLoading(false);
-      localStorage.setItem("token", res.data.token);
-      navigate("/profile");
-
-      console.log(res.data);
-    } catch (err) {
-      setIsLoading(false);
-      console.error(err);
-      setErrors({ submit: err.response?.data?.msg || "Server error" });
-    }
-  };
+    console.log("Login success:", res.data);
+    localStorage.setItem("token", res.data.token);
+    navigate("/profile");
+  } catch (err) {
+    console.log("Login error:", err);
+    console.log("Login error response:", err.response?.data);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleSocialLogin = (provider) => {
     setIsLoading(true);

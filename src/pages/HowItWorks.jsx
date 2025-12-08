@@ -10,7 +10,6 @@ import {
   CheckCircle,
   ArrowRight,
   Star,
-  MessageCircle,
   Calendar,
   Trophy,
   Zap,

@@ -14,8 +14,6 @@ import {
   Mail,
   ExternalLink,
   ChevronDown,
-  Heart,
-  MessageCircle,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
@@ -507,9 +505,6 @@ const Explore = () => {
                             <p className="text-gray-600 text-sm">{user.title}</p>
                           </div>
                         </div>
-                        <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                          <Heart className="w-4 h-4 text-gray-400 hover:text-red-500" />
-                        </button>
                       </div>
 
                       <p className="text-gray-700 text-sm mb-4 line-clamp-2">{user.bio}</p>
@@ -561,9 +556,6 @@ const Explore = () => {
                       <div className="flex gap-2">
                         <button className="flex-1 px-3 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-md transition-all duration-200 text-sm font-medium">
                           Connect
-                        </button>
-                        <button className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
-                          <MessageCircle className="w-4 h-4 text-gray-600" />
                         </button>
                         <button className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
                           <ExternalLink className="w-4 h-4 text-gray-600" />
